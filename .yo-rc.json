@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.17.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "form-fiche-navette",
+    "libraryId": "598f40f7-6b60-4106-9101-ca89d9a64a54",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "form-fiche-navette",
+    "solutionShortDescription": "form-fiche-navette description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "extension",
+    "extensionType": "FormCustomizer"
+  }
+}

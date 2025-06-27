@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "fiche-navette-form-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/ficheNavette/FicheNavetteFormCustomizer.js",
+          "manifest": "./src/extensions/ficheNavette/FicheNavetteFormCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "FicheNavetteFormCustomizerStrings": "lib/extensions/ficheNavette/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}

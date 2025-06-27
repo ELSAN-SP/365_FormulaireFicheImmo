@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "Formulaire-Immobilier",
+    "id": "598f40f7-6b60-4106-9101-ca89d9a64a54",
+    "version": "1.0.0.4",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "form-fiche-navette description"
+      },
+      "longDescription": {
+        "default": "form-fiche-navette description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "form-fiche-navette Feature",
+        "description": "The feature that activates elements of the form-fiche-navette solution.",
+        "id": "bb9d5ec0-d995-4777-9ef3-9ad6a6afe143",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/form-fiche-navette.sppkg"
+  }
+}

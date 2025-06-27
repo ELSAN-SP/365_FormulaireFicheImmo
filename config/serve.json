@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/spfx-serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://elsancare.sharepoint.com/sites/Referentiels/Immo/_layouts/15/SPListForm.aspx?List=%7B36580c13-a1a8-4412-b6cf-09f02e53cae4%7D",
+      "formCustomizer": {
+        "componentId": "7b9c19db-9ba0-4389-bde9-2363d39144c1",
+        "PageType": 8,
+        "RootFolder": "sites/Referentiels/Immo/Lists/Test/",
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "ficheNavette_NewForm": {
+      "pageUrl": "https://elsancare.sharepoint.com/sites/Referentiels/Immo/_layouts/15/SPListForm.aspx?List=%7B36580c13-a1a8-4412-b6cf-09f02e53cae4%7D",
+      "formCustomizer": {
+        "componentId": "7b9c19db-9ba0-4389-bde9-2363d39144c1",
+        "PageType": 8,
+        "RootFolder": "sites/Referentiels/Immo/Lists/Test/",
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "ficheNavette_EditForm": {
+      "pageUrl": "https://elsancare.sharepoint.com/sites/Referentiels/Immo/_layouts/15/SPListForm.aspx?List=%7B36580c13-a1a8-4412-b6cf-09f02e53cae4%7D",
+      "formCustomizer": {
+        "componentId": "7b9c19db-9ba0-4389-bde9-2363d39144c1",
+        "PageType": 6,
+        "RootFolder": "sites/Referentiels/Immo/Lists/Test/",
+        "ID": 18,
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "ficheNavette_ViewForm": {
+      "pageUrl": "https://elsancare.sharepoint.com/sites/Referentiels/Immo/_layouts/15/SPListForm.aspx?List=%7B36580c13-a1a8-4412-b6cf-09f02e53cae4%7D",
+      "formCustomizer": {
+        "componentId": "7b9c19db-9ba0-4389-bde9-2363d39144c1",
+        "PageType": 4,
+        "RootFolder": "sites/Referentiels/Immo/Lists/Test/",
+        "ID": 18,
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    }
+  }
+}
