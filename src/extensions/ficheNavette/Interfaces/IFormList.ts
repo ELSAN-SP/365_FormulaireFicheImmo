@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
 
 export interface IFormList {
+    Title? : string,
     etablissement?: string;
     typeDeDemande?: "Installations Techniques" | "Projets Immobiliers" | "";
     date?: dayjs.Dayjs;

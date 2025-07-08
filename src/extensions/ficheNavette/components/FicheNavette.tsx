@@ -43,6 +43,9 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
   const [displayFiles, setDisplayFiles] = React.useState<IAttachmentInfo[]>([]);
   const [EtablishmentList, setEtablishmentList] = React.useState<IEstablishmentCode[]>([]);
   const [Loading, setLoading] = React.useState<boolean>(false)
+//Filtre Etablissement
+const [FiltreCodes, setFiltreCodes] = React.useState<string[]>([]);
+
   // State pour les erreurs
   const [Errors,SetErrors] = React.useState<IErrors>({
     etablissement:'',
@@ -160,6 +163,23 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
     'anneeDeRealisationDuProjet',
     'projetPluriannuel'
   ]
+
+  //Fonction qui recupere les trigrame à afficher.
+  const _loadFiltreCodes = async () => {
+    try {
+      const web = Web('https://elsancare.sharepoint.com/sites/Referentiels/immo');
+      const sp = spfi(web).using(SPFx(props.context));
+  
+      const items = await sp.web.lists
+        .getByTitle("FiltreEtablissements")
+        .items.select("Title")();
+  
+      const codes = items.map(item => item.Title?.trim()).filter(Boolean);
+      setFiltreCodes(codes);
+    } catch (e) {
+      console.error("Erreur lors du chargement des codes autorisés :", e);
+    }
+  };
 
   // Fonction qui permet de récupérer le nom et le code de l'établissement
   const _retrieveList = async (): Promise<void> => {
@@ -279,9 +299,11 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
     try {
       if (setLoading) setLoading(true);
       // Nouvelle entrée dans la liste
+      const libelleEtab = EtablishmentList.find(e => e.code === data.codeEtab)?.title ?? "";
       if (displayMode === 8) {
+
         const object = {
-          Title: data.etablissement?.trim().split('-')[1] ?? "",
+          Title: libelleEtab,
           TypeDemande: data.typeDeDemande ?? "",
           ReferenceFiche: data.referenceFiche ?? "",
           NomProjet: data.nomDuProjet ?? "",
@@ -367,7 +389,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
           StatutFiche : (data.IsCheck) ? "Soumise" : "En cours"
         }
 
-        // console.log(JSON.stringify(object, null, 2),object.Code_Etab)
+        //console.log(JSON.stringify(object, null, 2),object.Code_Etab)
         const ItemToAdd = await spi.web.lists.getById(MainList).items.add(object)
 
         // On récupére l'id de l'élement
@@ -381,7 +403,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
 
         // On update dans le champ référence fiche
         const ItemUpdate = await item.update({
-          ReferenceFiche: `${object.Code_Etab}/${object.AnneeRealisation}/${itemAddedId}`
+          ReferenceFiche: `${object.Code_Etab}${object.AnneeRealisation}${itemAddedId}`
         })
 
         if (files && files.length > 0) {
@@ -392,7 +414,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
           }
         }
 
-        // modiiier le l'id de la deuxiéme liste à metrre à jour ici 
+        // modifier le l'id de la deuxiéme liste à metrre à jour ici 
         const AddToFollowingTable = await spi.web.lists.getById(SecondList).items.add({
           testId: itemAddedId,
           CDS_EtablissementsId: etabId,
@@ -403,7 +425,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
 
       } else if (itemId) {
         const object = {
-          Title: data.etablissement?.trim().split('-')[1] ?? "",
+          Title: libelleEtab,
           TypeDemande: data.typeDeDemande ?? "",
           ReferenceFiche: data.referenceFiche ?? "",
           NomProjet: data.nomDuProjet ?? "",
@@ -486,7 +508,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
           NomDuLot2: data.nomLot2 ?? "",
           NomDuLot3: data.nomLot3 ?? "",
           Code_Etab: data.codeEtab ?? "",
-          StatutFiche : (data.IsCheck) ? "Soumise" : "En cours"
+          StatutFiche: data.StatutFiche ?? (data.IsCheck ? "Soumise" : "En cours")
         }
 
         const item: IItem = spi.web.lists.getById(MainList).items.getById(itemId);
@@ -537,144 +559,147 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
 
   // Au chargement du composant
   React.useEffect(() => {
-    setLoading(true)
-    // On récupére les établissement
-    _retrieveList().catch((err) => {
-      console.error("Erreur dans useEffect :", err);
-    });
-
-    // Champ BudgetTotal
-    let total = 0;
-    const safe = (n: number | undefined): number => n ?? 0;
-
-    if (Form.typeDeDemande === 'Projets Immobiliers') {
-      total =
-        safe(Form.coutTravaux) +
-        safe(Form.honorairesMissionArchitecte) +
-        safe(Form.honorairesMissionBET) +
-        safe(Form.honorairesMissionBCT) +
-        safe(Form.honorairesMissionCSPS) +
-        safe(Form.honorairesMissionCSSI) +
-        safe(Form.honorairesAssurancesTRC_DO) +
-        safe(Form.autres);
-    } else if (Form.typeDeDemande === 'Installations Techniques') {
-      total =
-        safe(Form.coutTravaux) +
-        safe(Form.honorairesMissionBET) +
-        safe(Form.honorairesMissionBCT) +
-        safe(Form.honorairesMissionCSSI) +
-        safe(Form.autres);
-    }
-
-    setForm((prev) => ({
-      ...prev,
-      budgetTotal: total,
-    }));
-
-    // Récupérer une fiche si on est en modif
-    if (props.displayMode === 4 || props.displayMode === 6) {
-      const handleLoad = async (): Promise<void> => {
-        try {
-
+    setLoading(true);
+  
+    const handleLoad = async (): Promise<void> => {
+      try {
+        // 1. Charger les établissements et les filtres
+        await Promise.all([
+          _retrieveList(),
+          _loadFiltreCodes()
+        ]);
+  
+        // 2. Calculer le budget total
+        let total = 0;
+        const safe = (n: number | undefined): number => n ?? 0;
+  
+        if (Form.typeDeDemande === 'Projets Immobiliers') {
+          total =
+            safe(Form.coutTravaux) +
+            safe(Form.honorairesMissionArchitecte) +
+            safe(Form.honorairesMissionBET) +
+            safe(Form.honorairesMissionBCT) +
+            safe(Form.honorairesMissionCSPS) +
+            safe(Form.honorairesMissionCSSI) +
+            safe(Form.honorairesAssurancesTRC_DO) +
+            safe(Form.autres);
+        } else if (Form.typeDeDemande === 'Installations Techniques') {
+          total =
+            safe(Form.coutTravaux) +
+            safe(Form.honorairesMissionBET) +
+            safe(Form.honorairesMissionBCT) +
+            safe(Form.honorairesMissionCSSI) +
+            safe(Form.autres);
+        }
+  
+        setForm((prev) => ({
+          ...prev,
+          budgetTotal: total,
+        }));
+  
+        // 3. Récupérer la fiche si en modification
+        if (props.displayMode === 4 || props.displayMode === 6) {
           const item: any = await spi.web.lists.getById(MainList).items.getById(props.context.itemId)();
           if (item) {
-            setForm(
-              {
-                date: item.Modified ? dayjs(item.Modified) : dayjs(),
-                etablissement: item.Title || "",
-                typeDeDemande: item.TypeDemande || "",
-                referenceFiche: item.ReferenceFiche || "",
-                nomDuProjet: item.NomProjet || "",
-                niveauDePriorite: item.NiveauPriorite || "",
-                projetDejaPresenteEnN1: item.ProjetPresenteN1 ?? undefined,
-                anneeDeRealisationDuProjet: item.AnneeRealisation ?? undefined,
-                projetPluriannuel: item.ProjetPluriannuel ?? undefined,
-                description: item.Description || "",
-                miseEnConformite: item.MiseConformite ?? undefined,
-                suitePrescriptionCommissionSecurite: item.PrescriptionSecurite ?? undefined,
-                suitePrescriptionBureauControle: item.PrescriptionControle ?? undefined,
-                suiteVetuste: item.Vetuste ?? undefined,
-                businessPlanPresente: item.BusinessPlanPresente ?? undefined,
-                casDerogatoireBusinessPlanRaison: item.CasDerogatoireBusinessPlan || "",
-                demandeARS: item.DemandeARS ?? undefined,
-                raisonNonImputationCAPEX: item.NonImputeCapex || "",
-                besoinBET: item.BesoinBET ?? undefined,
-                nomBET: item.NomBET || "",
-                besoinBCT: item.BesoinBCT ?? undefined,
-                nomBCT: item.NomBCT || "",
-                besoinCSSI: item.BesoinCSSI ?? undefined,
-                nomCSSI: item.NomCSSI || "",
-                besoinArchitecte: item.BesoinArchitecte ?? undefined,
-                nomArchitecte: item.NomArchitecte || "",
-                besoinCSPS: item.BesoinCSPS ?? undefined,
-                nomCSPS: item.NomCSPS || "",
-                travauxGenerentEconomiesEnergie: item.EconomieEnergie ?? undefined,
-                estimationEconomieKWH: item.EstimationKWH || "",
-                eligiblesCEE: item.EligiblesCEE ?? undefined,
-                montantEstimeCEE: item.MontantCEE ?? undefined,
-                autresSubventions: item.AutresSubventions ?? undefined,
-                montantEstimeSubventions: item.MontantAutresSubv ?? undefined,
-                materiauxGroupe: item.MateriauxGroupe ?? undefined,
-                casDerogatoireMateriaux: item.CasDerogatoireMateriaux || "",
-                nomFournisseursReference: item.FournisseursReferences || "",
-                coutTravaux: item.CoutTravaux ?? undefined,
-                honorairesMissionBET: item.HonorairesBET ?? undefined,
-                honorairesMissionBCT: item.HonorairesBCT ?? undefined,
-                honorairesMissionCSSI: item.HonorairesCSSI ?? undefined,
-                honorairesMissionArchitecte: item.HonorairesArch ?? undefined,
-                honorairesMissionCSPS: item.HonorairesCSPS ?? undefined,
-                honorairesAssurancesTRC_DO: item.HonoraireAssurances ?? undefined,
-                autres: item.AutresFrais ?? undefined,
-                budgetTotal: item.BudgetTotal ?? undefined,
-                budgetConsomme2025: item.BudgetConsomme2025 ?? undefined,
-                budgetPrevisionnel2025: item.BudgetPrevisionnel2025 ?? undefined,
-                capexConsomme2026: item.CapexConsomme2026 ?? undefined,
-                travauxAllotis: item.TravauxAllotis ?? undefined,
-                nombreDeLots: item.NbLot ?? undefined,
-                casDerogatoireAllotissement: item.CasDerogatoireAllot || "",
-                consultation3Entreprises: item.Consult3Ent ?? undefined,
-                casDerogatoireConsultation3Entreprises: item.CasDerogatoireConsult3Ent || "",
-                devisNegocies: item.DevisNegocies ?? undefined,
-                casDerogatoireDevisNonNegocies: item.CasDerogatoireDevisNegocies || "",
-                nomEntreprise1: item.NomEntreprise1 || "",
-                montantDevis1: item.MontantDevis1 ?? undefined,
-                nomEntreprise2: item.NomEntreprise2 || "",
-                montantDevis2: item.MontantDevis2 ?? undefined,
-                nomEntreprise3: item.NomEntreprise3 || "",
-                montantDevis3: item.MontantDevis3 ?? undefined,
-                nomEntrepriseProposee1: item.NomEntrepriseProposee || "",
-                montantDevisAvantNegociation1: item.MontantAvantNegociation ?? undefined,
-                montantApresNegociation1: item.MontantApresNegociation ?? undefined,
-                nomEntrepriseProposeeLot1: item.NomEntrepriseProposeeLot1 || "",
-                montantDevisAvantNegociationLot1: item.MontantAvantNegociationLot1 ?? undefined,
-                montantApresNegociationLot1: item.MontantApresNegociationLot1 ?? undefined,
-                nomEntrepriseProposeeLot2: item.NomEntrepriseProposeeLot2 || "",
-                montantDevisAvantNegociationLot2: item.MontantAvantNegociationLot2 ?? undefined,
-                montantApresNegociationLot2: item.MontantApresNegociationLot2 ?? undefined,
-                nomEntrepriseProposeeLot3: item.NomEntrepriseProposeeLot3 || "",
-                montantDevisAvantNegociationLot3: item.MontantAvantNegociationLot3 ?? undefined,
-                montantApresNegociationLot3: item.MontantApresNegociationLot3 ?? undefined,
-                nomLot1: item.NomDuLot1 || "",
-                nomLot2: item.NomDuLot2 || "",
-                nomLot3: item.NomDuLot3 || "",
-                codeEtab: item.Code_Etab || "",
-                modifie: item.Modified ? item.Modified : undefined,
-                cree: item.Created ? item.Created : undefined,
-                creePar: item.Author?.Title || "",
-                modifiePar: item.Editor?.Title || "",
-                StatutFiche: item?.StatutFiche ?? undefined
-              }
-            )
-            await getAttachmentFiles()
+            setForm({
+              ...Form,
+              date: item.Modified ? dayjs(item.Modified) : dayjs(),
+              etablissement: item.Code_Etab ?? "",
+              codeEtab: item.Code_Etab ?? "",
+              typeDeDemande: item.TypeDemande || "",
+              referenceFiche: item.ReferenceFiche || "",
+              nomDuProjet: item.NomProjet || "",
+              niveauDePriorite: item.NiveauPriorite || "",
+              projetDejaPresenteEnN1: item.ProjetPresenteN1 ?? undefined,
+              anneeDeRealisationDuProjet: item.AnneeRealisation ?? undefined,
+              projetPluriannuel: item.ProjetPluriannuel ?? undefined,
+              description: item.Description || "",
+              miseEnConformite: item.MiseConformite ?? undefined,
+              suitePrescriptionCommissionSecurite: item.PrescriptionSecurite ?? undefined,
+              suitePrescriptionBureauControle: item.PrescriptionControle ?? undefined,
+              suiteVetuste: item.Vetuste ?? undefined,
+              businessPlanPresente: item.BusinessPlanPresente ?? undefined,
+              casDerogatoireBusinessPlanRaison: item.CasDerogatoireBusinessPlan || "",
+              demandeARS: item.DemandeARS ?? undefined,
+              raisonNonImputationCAPEX: item.NonImputeCapex || "",
+              besoinBET: item.BesoinBET ?? undefined,
+              nomBET: item.NomBET || "",
+              besoinBCT: item.BesoinBCT ?? undefined,
+              nomBCT: item.NomBCT || "",
+              besoinCSSI: item.BesoinCSSI ?? undefined,
+              nomCSSI: item.NomCSSI || "",
+              besoinArchitecte: item.BesoinArchitecte ?? undefined,
+              nomArchitecte: item.NomArchitecte || "",
+              besoinCSPS: item.BesoinCSPS ?? undefined,
+              nomCSPS: item.NomCSPS || "",
+              travauxGenerentEconomiesEnergie: item.EconomieEnergie ?? undefined,
+              estimationEconomieKWH: item.EstimationKWH || "",
+              eligiblesCEE: item.EligiblesCEE ?? undefined,
+              montantEstimeCEE: item.MontantCEE ?? undefined,
+              autresSubventions: item.AutresSubventions ?? undefined,
+              montantEstimeSubventions: item.MontantAutresSubv ?? undefined,
+              materiauxGroupe: item.MateriauxGroupe ?? undefined,
+              casDerogatoireMateriaux: item.CasDerogatoireMateriaux || "",
+              nomFournisseursReference: item.FournisseursReferences || "",
+              coutTravaux: item.CoutTravaux ?? undefined,
+              honorairesMissionBET: item.HonorairesBET ?? undefined,
+              honorairesMissionBCT: item.HonorairesBCT ?? undefined,
+              honorairesMissionCSSI: item.HonorairesCSSI ?? undefined,
+              honorairesMissionArchitecte: item.HonorairesArch ?? undefined,
+              honorairesMissionCSPS: item.HonorairesCSPS ?? undefined,
+              honorairesAssurancesTRC_DO: item.HonoraireAssurances ?? undefined,
+              autres: item.AutresFrais ?? undefined,
+              budgetTotal: item.BudgetTotal ?? undefined,
+              budgetConsomme2025: item.BudgetConsomme2025 ?? undefined,
+              budgetPrevisionnel2025: item.BudgetPrevisionnel2025 ?? undefined,
+              capexConsomme2026: item.CapexConsomme2026 ?? undefined,
+              travauxAllotis: item.TravauxAllotis ?? undefined,
+              nombreDeLots: item.NbLot ?? undefined,
+              casDerogatoireAllotissement: item.CasDerogatoireAllot || "",
+              consultation3Entreprises: item.Consult3Ent ?? undefined,
+              casDerogatoireConsultation3Entreprises: item.CasDerogatoireConsult3Ent || "",
+              devisNegocies: item.DevisNegocies ?? undefined,
+              casDerogatoireDevisNonNegocies: item.CasDerogatoireDevisNegocies || "",
+              nomEntreprise1: item.NomEntreprise1 || "",
+              montantDevis1: item.MontantDevis1 ?? undefined,
+              nomEntreprise2: item.NomEntreprise2 || "",
+              montantDevis2: item.MontantDevis2 ?? undefined,
+              nomEntreprise3: item.NomEntreprise3 || "",
+              montantDevis3: item.MontantDevis3 ?? undefined,
+              nomEntrepriseProposee1: item.NomEntrepriseProposee || "",
+              montantDevisAvantNegociation1: item.MontantAvantNegociation ?? undefined,
+              montantApresNegociation1: item.MontantApresNegociation ?? undefined,
+              nomEntrepriseProposeeLot1: item.NomEntrepriseProposeeLot1 || "",
+              montantDevisAvantNegociationLot1: item.MontantAvantNegociationLot1 ?? undefined,
+              montantApresNegociationLot1: item.MontantApresNegociationLot1 ?? undefined,
+              nomEntrepriseProposeeLot2: item.NomEntrepriseProposeeLot2 || "",
+              montantDevisAvantNegociationLot2: item.MontantAvantNegociationLot2 ?? undefined,
+              montantApresNegociationLot2: item.MontantApresNegociationLot2 ?? undefined,
+              nomEntrepriseProposeeLot3: item.NomEntrepriseProposeeLot3 || "",
+              montantDevisAvantNegociationLot3: item.MontantAvantNegociationLot3 ?? undefined,
+              montantApresNegociationLot3: item.MontantApresNegociationLot3 ?? undefined,
+              nomLot1: item.NomDuLot1 || "",
+              nomLot2: item.NomDuLot2 || "",
+              nomLot3: item.NomDuLot3 || "",
+              modifie: item.Modified ? item.Modified : undefined,
+              cree: item.Created ? item.Created : undefined,
+              creePar: item.Author?.Title || "",
+              modifiePar: item.Editor?.Title || "",
+              StatutFiche: item?.StatutFiche ?? undefined
+            });
+  
+            await getAttachmentFiles();
           }
-
-        } catch (e) {
-          console.log(e)
         }
+  
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-      void handleLoad()
-    }
-    setLoading(false)
+    };
+  
+    void handleLoad();
   }, [
     Form.typeDeDemande,
     Form.coutTravaux,
@@ -684,8 +709,9 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
     Form.honorairesMissionCSPS,
     Form.honorairesMissionCSSI,
     Form.honorairesAssurancesTRC_DO,
-    Form.autres,
-  ])
+    Form.autres
+  ]);
+  
 
 
   if (Loading) {
@@ -742,20 +768,22 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
           <Autocomplete
             loading={(EtablishmentList ?? []).length < 1}
             disablePortal
-            value={Form.etablissement}
+            value={Form.etablissement || ""}
             onChange={(_, newValue: string | null) => {
-              const Code = EtablishmentList.find((item: IEstablishmentCode) => item.title === newValue)
-              setForm({
+              setForm({  
                 ...Form,
                 etablissement: newValue ?? "",
-                codeEtab: Code?.code ?? ""
+                codeEtab: newValue ?? ""       
               });
               SetErrors({
                 ...Errors,
                 etablissement : ''
               })
             }}
-            options={(EtablishmentList ?? []).map((item) => `${item.code} - ${item.title}`)}
+            options={(EtablishmentList ?? [])
+              .filter(item => FiltreCodes.includes(item.code)) // 👈 Filtre actif ici
+              .map(item => item.code)
+            }
             renderInput={(params) => <TextField 
               error={!!Errors.etablissement}
               helperText={Errors.etablissement}
@@ -2069,7 +2097,7 @@ export const FicheNavette: React.FunctionComponent<IFicheNavetteProps> = (props:
           <Stack direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2, md: 4 }} alignItems='center' justifyContent="center">
             {props.displayMode !== FormDisplayMode.Display &&
-              (Form?.StatutFiche === 'Refusée' || Form?.StatutFiche === 'En cours' || Form?.StatutFiche === undefined) && (
+              (
                 <Button variant="outlined" loading={Loading} onClick={() => submit()}>
                   Valider
                 </Button>
