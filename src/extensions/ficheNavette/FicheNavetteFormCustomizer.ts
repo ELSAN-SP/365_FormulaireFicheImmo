@@ -6,7 +6,9 @@ import {
   BaseFormCustomizer
 } from '@microsoft/sp-listview-extensibility';
 
-import { FicheNavette,IFicheNavetteProps } from './components/FicheNavette';
+//import { FicheNavette,IFicheNavetteProps } from './components/FicheNavette';
+//import FicheNavette from './components/FicheNavette';
+import FicheNavette, { IFicheNavetteProps } from './components/FicheNavette';
 
 /**
  * If your form customizer uses the ClientSideComponentProperties JSON input,
@@ -33,14 +35,18 @@ export default class FicheNavetteFormCustomizer
 
   public render(): void {
     // Use this method to perform your custom rendering.
+    
+      // Récupère l'ID de l'élément en cours si on est en édition
+      const itemId = this.context.pageContext.listItem?.id;
+      
 
-    const ficheNavette: React.ReactElement<IFicheNavetteProps> =
-      React.createElement(FicheNavette, {
+      const ficheNavette: React.ReactElement<IFicheNavetteProps> = React.createElement(FicheNavette, {
         context: this.context,
         displayMode: this.displayMode,
+        itemId: itemId,          
         onSave: this._onSave,
         onClose: this._onClose
-       } as IFicheNavetteProps);
+      });
 
     ReactDOM.render(ficheNavette, this.domElement);
   }

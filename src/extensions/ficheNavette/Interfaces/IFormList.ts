@@ -1,5 +1,14 @@
 import * as dayjs from 'dayjs';
 
+export type Lot = {
+    id: string;
+    nomLot?: string;
+    nomEntrepriseProposee?: string;
+    montantAvantNegociation?: number;
+    montantApresNegociation?: number;
+};
+
+
 export interface IFormList {
     Title? : string,
     etablissement?: string;
@@ -86,4 +95,5 @@ export interface IFormList {
     modifiePar?: string;
     StatutFiche?: "Soumise" | "Validée" | "En attente de la DI" | "Refusée" | "En cours" | undefined
     IsCheck?: boolean
+    lots?: Lot[];
 }
