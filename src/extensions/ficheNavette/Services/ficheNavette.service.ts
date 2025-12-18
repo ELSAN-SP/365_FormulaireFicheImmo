@@ -377,9 +377,22 @@ async save(form: Partial<IFormList>, itemId?: number): Promise<number> {
   //--- Création ou mise à jour
   if (!itemId) {
     //--- Création
-    const addRes = await list.items.add(payload);
-    const newId = addRes.data?.Id ?? addRes.Id;
-    
+    const list = this.sp.web.lists.getByTitle(this.opts.listTitle);
+    const folderName = form.codeEtab ?? '';
+
+    // Préparer le payload pour addValidateUpdateItemUsingPath
+    const fieldsArray = Object.entries(payload).map(([key, value]) => ({
+      FieldName: key,
+      FieldValue: value != null ? String(value) : ''
+    }));
+
+    // Chemin complet vers le dossier
+    const listPath = `/sites/Referentiels/Immo/Lists/Test/${folderName}`;
+
+    // Créer l’item dans le dossier
+    const addRes = await list.addValidateUpdateItemUsingPath(fieldsArray, listPath);
+    const newId = Number(addRes.find(f => f.FieldName?.toLowerCase() === 'id' || f.FieldName === 'Id')?.FieldValue);
+
     //--- Mise à jour ReferenceFiche après création
     await list.items.getById(newId).update({
       [m.ReferenceFiche ?? 'ReferenceFiche']: `${form.codeEtab ?? ''}${form.anneeDeRealisationDuProjet ?? ''}${newId}`
