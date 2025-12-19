@@ -368,6 +368,17 @@ async save(form: Partial<IFormList>, itemId?: number): Promise<number> {
 
     ...put('StatutFiche', form.StatutFiche ?? (form.IsCheck ? 'Soumise' : 'En cours')),
 
+    //--  Installation Technique
+    ...put('NomEntreprise1', form.nomEntreprise1 ?? ''),
+    ...put('MontantDevis1', form.montantDevis1 ?? null),
+    ...put('NomEntreprise2', form.nomEntreprise2 ?? ''),
+    ...put('MontantDevis2', form.montantDevis2 ?? null),
+    ...put('NomEntreprise3', form.nomEntreprise3 ?? ''),
+    ...put('MontantDevis3', form.montantDevis3 ?? null),
+    ...put('NomEntrepriseProposee', form.nomEntrepriseProposee1 ?? ''),
+    ...put('MontantAvantNegociation', form.montantDevisAvantNegociation1 ?? null),
+    ...put('MontantApresNegociation', form.montantApresNegociation1 ?? null),
+
     //--- Ajout des lots normalisés dans le payload
     ...clearLotFields(),
     ...mapLotsToFields(normalizedLots)

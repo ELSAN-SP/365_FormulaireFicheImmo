@@ -1,4 +1,4 @@
-// Sections/SectionBudgetLots.tsx
+// Sections/SectionBudgetProjetImmo.tsx
 import * as React from 'react';
 import {
   Card,
@@ -26,7 +26,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function SectionBudgetLots({ form, setField, errors, disabled }: Props) {
+export default function SectionBudgetProjetImmo({ form, setField, errors, disabled }: Props) {
   if (!form.typeDeDemande) return null;
 
   //--- Gestion Oui/Non avec effacement des champs liés

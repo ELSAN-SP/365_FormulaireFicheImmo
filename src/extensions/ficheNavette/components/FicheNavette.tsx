@@ -12,7 +12,7 @@ import SectionIntervenants from './Sections/SectionIntervenants';
 import SectionEconomieEnergie from './Sections/SectionEconomieEnergie';
 import SectionRecoursFournisseurs from './Sections/SectionRecoursFournisseurs';
 import SectionBudget from './Sections/SectionBudget';
-import SectionBudgetLots from './Sections/SectionBudgetLots';
+import SectionBudgetLots from './Sections/SectionBudgetMain';
 import SectionPieceJointe from './Sections/SectionPieceJointe';
 import SectionMessageValidation from './Sections/SectionMessageValidation';
 
@@ -21,6 +21,7 @@ import type { IEstablishmentCode } from '../Interfaces/IEtablishmentCode';
 import { useFicheNavetteForm } from './hooks/useFicheNavetteForm';
 import { useValidation } from './hooks/useValidation';
 import { FicheNavetteService } from '../Services/ficheNavette.service';
+import SectionBudgetMain from './Sections/SectionBudgetMain';
 
 export interface IFicheNavetteProps {
   context?: any;
@@ -213,7 +214,7 @@ export default function FicheNavette({
           disabled={disabled}
         />
 
-        <SectionBudgetLots
+        <SectionBudgetMain
           form={form}
           setField={setField} 
           errors={errors}
