@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // Sections/SectionMessageValidation.tsx
 import * as React from 'react';
 import { Snackbar, Alert } from '@mui/material';

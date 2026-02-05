@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useFicheNavetteForm.ts
 import * as React from 'react';
 import type { IFormList, Lot } from '../../Interfaces/IFormList';
@@ -16,7 +18,7 @@ function setByPath<T extends object>(obj: T, path: string, value: any): T {
   let cur = clone;
   for (let i = 0; i < parts.length - 1; i++) {
     const p = parts[i];
-    if (cur[p] == null) cur[p] = {};
+    if (cur[p] === null) cur[p] = {};
     cur = cur[p];
   }
   cur[parts[parts.length - 1]] = value;

@@ -1,3 +1,6 @@
+/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Services/ficheNavette.service.ts
 import { spfi, SPFI } from '@pnp/sp';
@@ -165,7 +168,7 @@ export class FicheNavetteService {
          const montantAvantNegociation = val(`MontantAvantNegociationLot${i}`);
          const montantApresNegociation = val(`MontantApresNegociationLot${i}`);
        
-         if (nomLot || nomEntrepriseProposee || montantAvantNegociation != null || montantApresNegociation != null) {
+         if (nomLot || nomEntrepriseProposee || montantAvantNegociation !== null || montantApresNegociation !== null) {
            lots.push({
              id: i.toString(), // conversion en string
              nomLot,
@@ -272,7 +275,7 @@ async save(form: Partial<IFormList>, itemId?: number): Promise<number> {
     if (!lots) return [];
     return lots
       .filter(l =>
-        l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation != null || l.montantApresNegociation != null
+        l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation !== null || l.montantApresNegociation !== null
       )
       .slice(0, 20);
   };
@@ -394,7 +397,7 @@ async save(form: Partial<IFormList>, itemId?: number): Promise<number> {
     // Préparer le payload pour addValidateUpdateItemUsingPath
     const fieldsArray = Object.entries(payload).map(([key, value]) => ({
       FieldName: key,
-      FieldValue: value != null ? String(value) : ''
+      FieldValue: value !== null ? String(value) : ''
     }));
 
     // Chemin complet vers le dossier

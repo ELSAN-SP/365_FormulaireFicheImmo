@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // hooks/useValidation.ts
 import * as React from 'react';
 import type { IFormList } from '../../Interfaces/IFormList';

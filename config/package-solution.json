@@ -3,7 +3,7 @@
   "solution": {
     "name": "Formulaire-Immobilier",
     "id": "598f40f7-6b60-4106-9101-ca89d9a64a54",
-    "version": "1.0.0.5",
+    "version": "1.0.0.6",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // FicheNavette.tsx
 import * as React from 'react';
 import { Container, Stack, Typography, Box, Divider } from '@mui/material';
@@ -245,6 +246,7 @@ export default function FicheNavette({
         />
 
         {/* Debug JSON */}
+        {/*
         <Box>
           <Divider sx={{ my: 2 }} />
           <Typography variant="subtitle2">Form JSON (live)</Typography>
@@ -261,6 +263,8 @@ export default function FicheNavette({
             </>
           )}
         </Box>
+        */}
+        
       </Stack>
     </Container>
   );

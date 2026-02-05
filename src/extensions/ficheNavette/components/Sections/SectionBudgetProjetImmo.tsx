@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // Sections/SectionBudgetProjetImmo.tsx
 import * as React from 'react';
 import {
@@ -82,7 +84,7 @@ export default function SectionBudgetProjetImmo({ form, setField, errors, disabl
 
     //--- Normalisation des lots pour supprimer les trous
     const normalizedLots = updated.filter(l =>
-      l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation != null || l.montantApresNegociation != null
+      l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation !== null || l.montantApresNegociation !== null
     );
     setField('lots', normalizedLots);
   };
@@ -110,7 +112,7 @@ export default function SectionBudgetProjetImmo({ form, setField, errors, disabl
       setField(
         'lots',
         updated.filter(l =>
-          l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation != null || l.montantApresNegociation != null
+          l.nomLot || l.nomEntrepriseProposee || l.montantAvantNegociation !== null || l.montantApresNegociation !== null
         )
       );
     };

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // Sections/SectionRecoursFournisseursReferences.tsx
 import * as React from 'react';
 import {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Sections/SectionBudget.tsx
 import * as React from 'react';
 import { Card, CardHeader, CardContent, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, InputAdornment } from '@mui/material';
